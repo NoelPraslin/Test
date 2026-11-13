@@ -1,7 +1,7 @@
 {
-  "name": "Notre semaine",
-  "short_name": "Séjour",
-  "description": "Planning, menus, courses et jeux du séjour",
+  "name": "Noël",
+  "short_name": "Noël",
+  "description": "Planning, menus, courses et jeux de Noël",
   "lang": "fr",
   "start_url": "./",
   "scope": "./",

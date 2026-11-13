@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1f4e79"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Séjour"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E🎄%3C/text%3E%3C/svg%3E"><title>Notre semaine</title>
+<meta name="theme-color" content="#1f4e79"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Noël"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E🎄%3C/text%3E%3C/svg%3E"><title>Notre semaine</title>
 <style>
 :root{--bg:#f5f6f8;--card:#fff;--ink:#1f2933;--mut:#6b7785;--line:#e3e7ec;--acc:#1f4e79;--acc2:#e6eef6;--on:#fff;--ok:#2a7d4f;--bad:#c0392b}
 @media(prefers-color-scheme:dark){:root{--bg:#121820;--card:#1b232d;--ink:#e8edf2;--mut:#9aa7b5;--line:#2c3744;--acc:#6aa9e0;--acc2:#243447;--on:#0e1722;--ok:#5fcf8f;--bad:#ff7b6e}}
@@ -69,7 +69,7 @@ const iso=d=>new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice
 const DEF={title:"Notre semaine",place:"",start:iso(new Date()),days:7,places:"Maison, Terrasse, Restaurant, Pique-nique",cats:"Fruits & légumes, Viandes & poissons, Frais, Épicerie, Boissons, Autre",
  meals:{m1:{n:"Petit-déj",t:"08:30"},m2:{n:"Déjeuner",t:"12:30"},m3:{n:"Goûter",t:"16:30"},m4:{n:"Apéro",t:"19:00"},m5:{n:"Dîner",t:"20:30"}}};
 let D={},Q=[],C=DEF,base="",fl=0;
-const S={tab:"home",day:0,me:"",sub:"list",mode:"idea",sel:"",fp:null,tool:"pres",o:{pbc:true},meS:"",ex:{t:"",a:"",p:""},dv:{},game:"tu",fq:{ph:"lobby"},rf:"all",lc:0,store:false,tu:{ph:"lobby",teams:["Équipe 1","Équipe 2"],sec:30,sc:[],ti:0,r:1,rem:[],all:[],left:0,t:0,nr:false},fx:null,sc:false,sv:null,ss:true};
+const S={tab:"home",day:0,me:"",sub:"list",mode:"idea",sel:"",fp:null,tool:"pres",o:{},meS:"",ex:{t:"",a:"",p:""},dv:{},game:"tu",fq:{ph:"lobby"},rf:"all",lc:0,store:false,tu:{ph:"lobby",teams:["Équipe 1","Équipe 2"],sec:30,sc:[],ti:0,r:1,rem:[],all:[],left:0,t:0,nr:false},fx:null,sc:false,sv:null,ss:true};
 const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){}};
 try{D=JSON.parse(ls("D")||"{}");Q=JSON.parse(ls("Q")||"[]")}catch(e){}S.me=ls("me")||"";S.meS=ls("meS")||"";
 const L=o=>Object.entries(o||{}).map(([id,v])=>Object.assign({id},v));
@@ -156,6 +156,8 @@ const fmt=s=>Math.floor(s/60)+":"+String(s%60).padStart(2,"0");
 const pbPhase=()=>{const p=(D.jeux||{}).pb;if(!p||!p.t0)return["none",0];const now=Date.now(),e=p.t0+p.dur*1000;if(p.stop&&p.stop>=p.t0)return["end",0];if(now<p.t0)return["wait",Math.ceil((p.t0-now)/1000)];if(now<e)return["play",Math.ceil((e-now)/1000)];return["end",0]};
 let pbPh="";function pbTick(){if(S.tab!=="games"||S.game!=="pb")return;const[ph,v]=pbPhase();if(ph!==pbPh){if(pbPh&&(ph==="play"||ph==="end")){try{navigator.vibrate&&navigator.vibrate(300)}catch(e){}}pbPh=ph;render();return}const el=$("#pbT");if(el)el.textContent=ph==="play"?fmt(v):v}
 const gsel=()=>`<div class="row" style="margin-bottom:10px">${[["tu","⏱️ Time’s Up"],["pb","🔤 Petit bac"],["fq","🤯 Insolite"]].map(([k,t])=>`<button class="g ${S.game===k?"on":""}" data-act="game" data-t="${k}">${t}</button>`).join("")}</div>`;
+const how=(k,t)=>`<div class="card"><button class="tg" style="border:0;margin:0;padding:0" data-act="tog" data-k="how${k}"><b>ℹ️ Comment jouer</b><span class="sub">${S.o["how"+k]?"▴":"▾"}</span></button>${S.o["how"+k]?`<div class="sub" style="margin-top:8px;line-height:1.55">${t}</div>`:""}</div>`;
+const HOW_TU="<b>Chacun ajoute ses mots depuis son téléphone</b>, mais la partie se joue sur <b>un seul téléphone</b> qu’on se passe.<br>1. Chacun choisit « Je suis… » puis ajoute ses mots (tapés ou piochés dans la bibliothèque). Tu ne vois que <b>tes</b> mots : ceux des autres sont cachés (tu vois seulement combien chacun en a ajouté).<br>2. On répartit les joueurs en équipes (carte Équipes), puis on lance la partie.<br>3. Il n’y a pas de maître du jeu : la personne qui tient le téléphone est celle qui fait deviner, et elle seule regarde le mot. Elle touche ✔ Trouvé ou ⏭ Passer.<br>4. Trois manches avec les mêmes mots : décrire (sans dire le mot), un seul mot, puis mimer. Le score s’affiche à chaque tour et à la fin.",HOW_PB="<b>Chacun joue sur son propre téléphone</b> et tout le monde voit la même manche en même temps. Il n’y a pas de maître du jeu.<br>1. Ajoutez les joueurs (carte Joueurs) et, si vous voulez, vos propres catégories.<br>2. N’importe qui lance une manche : après 10 secondes, la <b>même lettre</b> et les <b>mêmes catégories</b> apparaissent sur tous les téléphones.<br>3. Chacun tape ses réponses sur son téléphone (les autres ne les voient pas). N’importe qui peut toucher Stop.<br>4. On lit les réponses à voix haute. Une personne (le « compteur », au choix) saisit les points de chacun : <b>+2</b> mot valable et unique, <b>+1</b> mot valable mais trouvé aussi par d’autres, <b>−1</b> si quelqu’un s’est arrêté trop tôt avec n’importe quoi.<br>5. Quand vous avez fini, « Terminer la partie » affiche le classement.",HOW_FQ="<b>Un seul téléphone</b> qu’on se passe. Les questions sont posées à tour de rôle aux joueurs de la liste (dans un ordre tiré au hasard). Le joueur concerné répond Vrai ou Faux, puis le téléphone donne la réponse et une explication qu’on peut lire à voix haute. 1 point par bonne réponse. Pas de maître du jeu.";
 let tuI=0;const RULES=["Décris le mot avec des phrases, sans le dire","Un seul mot pour le faire deviner","Mime, sans parler"];
 function tuTick(){S.tu.t--;const el=$("#tuT");if(el)el.textContent=Math.max(0,S.tu.t);if(S.tu.t<=0)tuOut()}
 function tuGo(){S.tu.ph="turn";S.tu.t=S.tu.left>0?S.tu.left:S.tu.sec;S.tu.left=0;S.tu.nr=false;clearInterval(tuI);tuI=setInterval(tuTick,1000);render()}
@@ -255,64 +257,236 @@ const LIB=[
 ["🌍 Pays & villes",["Japon","Brésil","Égypte","Italie","Australie","Canada","Maroc","Mexique","Inde","Russie","Londres","Rome","Barcelone","Tokyo","Rio de Janeiro","Marseille","Bordeaux","Strasbourg","Lyon","Paris","Amsterdam","Istanbul","Berlin","Dubaï","Hawaï"]],
 ["🔬 Nature & science",["Volcan","Arc-en-ciel","Éclipse","Tornade","Iceberg","Cactus","Tournesol","Champignon","Étoile filante","Trou noir","Microscope","Aurore boréale","Tremblement de terre","Marée","Cascade","Jungle","Océan","Pleine lune","Fusée","Robot","Aimant","Glacier","Geyser","Orage"]],
 ["🎉 Sorties & fêtes",["Mariage","Anniversaire","Karaoké","Boîte de nuit","Cirque","Pique-nique","Théâtre","Opéra","Défilé de mode","Carnaval","Kermesse","Brocante","Concert","Spectacle de magie","Soirée pyjama","Marché","Zoo","Parc d’attractions","Bal masqué","Chasse aux œufs","Feu de camp","Chandeleur","Fête de la musique","Soirée jeux de société","Bal du 14 juillet"]]];
-const FACTS=[["Les pieuvres ont trois cœurs.",true,"Deux cœurs envoient le sang vers les branchies, un troisième vers le reste du corps."],
-["Une journée sur Vénus dure plus longtemps qu’une année sur Vénus.",true,"Vénus tourne très lentement sur elle-même (environ 243 jours terrestres) mais fait le tour du Soleil en environ 225 jours."],
-["La banane est une baie, mais pas la fraise.",true,"Botaniquement, une baie provient d’un seul ovaire et contient ses graines à l’intérieur. La fraise est un faux fruit."],
-["Les wombats font des crottes en forme de cubes.",true,"Leurs intestins moulent les crottes en cubes, ce qui les empêche de rouler."],
-["La Lune s’éloigne de la Terre de quelques centimètres chaque année.",true,"Environ 3,8 cm par an."],
-["Un éclair est plus chaud que la surface du Soleil.",true,"Environ 30 000 °C, contre environ 5 500 °C à la surface du Soleil."],
-["Les chats ne sentent pas le goût sucré.",true,"Il leur manque un gène nécessaire pour détecter le sucre."],
-["Les koalas ont des empreintes digitales très proches de celles des humains.",true,"Même au microscope, elles sont difficiles à distinguer des nôtres."],
-["L’Antarctique est le plus grand désert du monde.",true,"Un désert se définit par le manque de précipitations, pas par la chaleur."],
-["Il y a plus d’arbres sur Terre que d’étoiles dans notre galaxie.",true,"On estime environ 3 000 milliards d’arbres, contre 100 à 400 milliards d’étoiles dans la Voie lactée."],
-["Les flamants roses naissent avec un plumage gris ou blanc.",true,"Leur couleur rose vient des pigments de leur alimentation."],
-["Les dauphins dorment avec une moitié de cerveau éveillée.",true,"Ils doivent rester conscients pour remonter respirer."],
-["La Tour Eiffel peut être plus haute en été qu’en hiver.",true,"Le métal se dilate avec la chaleur : jusqu’à une quinzaine de centimètres de plus."],
-["Le premier site web a été mis en ligne en 1991.",true,"Il a été créé au CERN par Tim Berners-Lee."],
-["La peau est le plus grand organe du corps humain.",true,"Elle couvre environ 2 m² chez un adulte."],
-["Les requins existent depuis avant les arbres.",true,"Les premiers requins datent d’environ 450 millions d’années, les premiers arbres d’environ 350."],
-["Les hippopotames sécrètent un liquide rougeâtre qui protège leur peau.",true,"On l’appelle parfois « sueur de sang », mais ce n’est ni du sang ni de la sueur."],
-["Le mot « robot » vient du tchèque.",true,"Il vient de « robota » (travail forcé), popularisé par la pièce de Karel Čapek en 1920."],
-["Le Vatican est le plus petit pays du monde.",true,"Il fait environ 0,44 km²."],
-["Les abeilles peuvent apprendre à reconnaître des visages humains.",true,"Des expériences ont montré qu’elles peuvent distinguer et mémoriser des visages."],
-["Les vaches ont des meilleures amies.",true,"Des études montrent qu’elles ont des compagnes préférées et sont plus stressées quand elles en sont séparées."],
-["Le cerveau humain consomme environ un cinquième de l’énergie du corps.",true,"Alors qu’il ne représente qu’environ 2 % du poids du corps."],
-["Les loutres de mer se tiennent parfois la patte pendant leur sommeil.",true,"Cela leur évite de dériver loin les unes des autres."],
-["La plus haute montagne du système solaire se trouve sur Mars.",true,"Olympus Mons mesure environ 22 km de haut."],
-["Les crevettes-mantes voient bien plus de couleurs que les humains.",true,"Elles ont jusqu’à 12 types de photorécepteurs, contre 3 chez nous."],
-["Le Soleil représente environ 99 % de la masse du système solaire.",true,"Tout le reste (planètes, lunes, astéroïdes) pèse très peu en comparaison."],
+const FACTS=[["Les pieuvres ont du sang bleu.",true,"Leur sang contient de l’hémocyanine à base de cuivre, plus efficace que l’hémoglobine dans les eaux froides et pauvres en oxygène. Et elles ont trois cœurs en plus !"],
+["Le cœur d’une baleine bleue est à peu près de la taille d’une petite voiture.",true,"Il pèse près de 200 kg. En plongée, il peut descendre à quelques battements par minute pour économiser l’oxygène."],
+["Un tigre a des rayures sur la peau, pas seulement sur le poil.",true,"Si on rasait un tigre, on verrait le même motif sombre sur sa peau. Chaque tigre a un dessin unique, comme une empreinte digitale."],
+["Les ours polaires ont la peau noire.",true,"Leur poil est transparent et paraît blanc par diffusion de la lumière. La peau noire en dessous absorbe la chaleur du soleil."],
+["Les girafes n’ont que sept vertèbres au cou, comme nous.",true,"La différence, c’est que chacune de leurs vertèbres peut mesurer plus de 25 cm de long."],
+["Les wombats font des crottes en forme de cubes.",true,"Leurs intestins moulent de petits cubes qui ne roulent pas. Les wombats les posent sur des pierres ou des troncs pour marquer leur territoire."],
+["Un escargot peut avoir des milliers de dents.",true,"Sa langue râpeuse, la radula, est couverte de rangées de minuscules dents : jusqu’à 14 000 chez certaines espèces, renouvelées au fil de l’usure."],
+["Les abeilles se parlent en dansant.",true,"En frétillant selon un angle et une durée précis, une abeille indique à ses sœurs la direction et la distance des fleurs par rapport au soleil."],
+["Le colibri est le seul oiseau capable de voler en arrière.",true,"Ses ailes battent plus de 50 fois par seconde et pivotent aux épaules, ce qui lui permet aussi de faire du surplace devant une fleur."],
+["Les rats ne peuvent pas vomir.",true,"Ils en sont physiquement incapables, comme les chevaux. Les raticides à effet retard sont donc particulièrement efficaces contre eux."],
+["Les corneilles reconnaissent le visage de ceux qui les ont embêtées.",true,"Des chercheurs ont montré que des corneilles se montraient hostiles envers un masque porté par la personne qui les avait capturées, y compris des années plus tard."],
+["Un cafard peut vivre plusieurs jours sans sa tête.",true,"Il respire par des orifices sur son corps et son système nerveux est réparti. Il finit par mourir de soif au bout d’environ une semaine."],
+["Les éléphants sont incapables de sauter.",true,"Avec leur poids et leurs pattes en colonnes, ils ne peuvent pas décoller du sol, même d’un centimètre."],
+["La baleine boréale peut vivre plus de 200 ans.",true,"On a retrouvé chez certaines des pointes de harpon du XIXᵉ siècle encore plantées dans leur graisse."],
+["Le requin du Groenland peut vivre plusieurs siècles.",true,"On estime sa durée de vie entre 270 et plus de 500 ans : c’est le vertébré le plus âgé connu. Il nage à moins de 1 km/h."],
+["Tous les poissons-clowns naissent mâles.",true,"Dans un groupe, le plus gros devient femelle. Si elle disparaît, le mâle dominant change de sexe pour la remplacer."],
+["Le manchot empereur mâle couve son œuf pendant environ deux mois sans manger.",true,"Il le garde sur ses pieds, au chaud sous un repli de peau, par des températures pouvant descendre à −40 °C, pendant que la femelle se nourrit en mer."],
+["Les koalas dorment plus de 18 heures par jour.",true,"Les feuilles d’eucalyptus apportent très peu d’énergie et sont toxiques : dormir leur permet d’économiser des forces pour les digérer."],
+["Les paresseux ne descendent de leur arbre qu’environ une fois par semaine pour faire leurs besoins.",true,"C’est le moment le plus dangereux de leur vie, car c’est là qu’ils sont le plus exposés aux prédateurs."],
+["La crevette pistolet fait un bruit de coup de feu avec sa pince.",true,"En la claquant, elle crée une bulle qui éclate avec un bruit assourdissant et assomme ses proies."],
+["Les mouches goûtent avec leurs pattes.",true,"Elles ont des récepteurs gustatifs sur les pieds. Les papillons aussi : ils savent si une plante leur convient dès qu’ils se posent."],
+["La loutre de mer a jusqu’à 150 000 poils par cm².",true,"C’est la fourrure la plus dense du règne animal. Elle emprisonne de l’air et remplace la couche de graisse qui lui manque."],
+["L’oiseau-lyre peut imiter une tronçonneuse.",true,"Cet oiseau australien copie les chants des autres oiseaux, mais aussi des sons humains comme un appareil photo ou une alarme."],
+["L’ornithorynque est un mammifère qui pond des œufs.",true,"Le mâle a en plus un éperon venimeux aux pattes arrière. Et il n’a pas d’estomac au sens classique du terme."],
+["Les pieuvres ont plus de neurones dans leurs bras que dans leur tête.",true,"Environ les deux tiers de leurs neurones sont dans leurs huit bras, qui peuvent agir presque de façon autonome."],
+["Les dauphins s’appellent par un nom.",true,"Chacun développe un sifflement unique, sa « signature », et les autres l’utilisent pour l’interpeller."],
+["Les tardigrades peuvent survivre dans le vide de l’espace.",true,"En 2007, ces animaux microscopiques ont survécu à plusieurs jours d’exposition à l’espace en se déshydratant presque totalement."],
+["Les crocodiles ne peuvent pas tirer la langue.",true,"Elle est fixée au palais par une membrane. Ils ne peuvent donc pas la sortir de la bouche."],
+["Les cochons ne peuvent pratiquement pas transpirer.",true,"Ils n’ont presque pas de glandes sudoripares fonctionnelles : voilà pourquoi ils se roulent dans la boue pour se rafraîchir."],
+["Une abeille ne produit qu’environ un douzième de cuillère à café de miel dans toute sa vie.",true,"Un seul pot de miel représente donc le travail de milliers d’abeilles."],
+["Un panda géant passe 10 à 14 heures par jour à manger.",true,"Son système digestif est celui d’un carnivore : il digère mal le bambou et doit en avaler plus de 10 kg par jour."],
+["La corne d’un rhinocéros est faite de la même matière que nos ongles.",true,"C’est de la kératine, sans aucun os à l’intérieur, contrairement aux cornes des vaches."],
+["Les flamants roses naissent gris.",true,"Leur couleur rose vient des pigments de leur alimentation : algues et petites crevettes. En anglais, un groupe de flamants s’appelle une « flamboyance »."],
+["Les requins sont plus anciens que les arbres.",true,"Les premiers requins datent d’environ 450 millions d’années, les premiers arbres d’environ 350 millions."],
+["Un nuage cumulus moyen pèse environ 500 tonnes.",true,"C’est le poids de toutes les gouttelettes d’eau en suspension, soutenues par l’air chaud qui monte."],
+["Les chevaux ne peuvent pas vomir.",true,"Un muscle très puissant verrouille l’entrée de leur estomac. C’est pourquoi les coliques peuvent être si graves chez eux."],
+["Les chats ne perçoivent pas le goût sucré.",true,"Un gène leur fait défaut pour détecter les sucres : un gâteau n’a pour eux aucun intérêt gustatif."],
+["Les chauves-souris sont les seuls mammifères capables de vraiment voler.",true,"Les écureuils volants, eux, ne font que planer d’un arbre à l’autre."],
+["Les orques sont des dauphins, pas des baleines.",true,"Ce sont même les plus grands membres de la famille des dauphins, les mâles pouvant atteindre près de 8 mètres."],
+["La défense du narval est une dent.",true,"Cette longue spirale, qui peut dépasser 2 mètres, est une canine qui a poussé à travers la lèvre supérieure."],
+["Un bébé girafe tombe de près de 2 mètres à sa naissance.",true,"La mère accouche debout, et le petit tombe de haut sans dommage."],
+["L’œuf d’un kiwi peut peser jusqu’à un cinquième du poids de sa mère.",true,"C’est proportionnellement l’un des plus gros œufs d’oiseaux. Le kiwi est un oiseau incapable de voler, originaire de Nouvelle-Zélande."],
+["Les méduses existent depuis plus de 500 millions d’années.",true,"Elles sont plus anciennes que les dinosaures et n’ont ni cerveau ni cœur."],
+["La langue de la girafe est noire ou violette.",true,"On pense que cette couleur la protège des coups de soleil, car elle passe beaucoup de temps à l’air libre pour attraper les feuilles."],
+["Les yeux d’une autruche sont plus gros que son cerveau.",true,"Son œil mesure environ 5 cm de diamètre, l’un des plus gros de tous les animaux terrestres."],
+["Il y a plus de poulets que d’humains sur Terre.",true,"On compte environ 25 milliards de poulets, contre environ 8 milliards d’humains."],
+["Les fourmis d’Argentine forment une supercolonie de plusieurs milliers de kilomètres en Europe.",true,"Du sud de l’Italie à l’Espagne, ces fourmis se reconnaissent et ne se battent pas entre elles : une méga-colonie d’environ 6 000 km."],
+["Neptune n’a fait qu’un seul tour autour du Soleil depuis sa découverte.",true,"Découverte en 1846, elle a bouclé sa première orbite en 2011 : une année y dure environ 165 ans terrestres."],
+["Saturne flotterait sur l’eau.",true,"Sa densité moyenne est inférieure à celle de l’eau, car elle est faite surtout d’hydrogène et d’hélium."],
+["Les astronautes de la Station spatiale voient 16 levers de soleil par jour.",true,"Elle fait le tour de la Terre en environ 90 minutes, à près de 28 000 km/h."],
+["Sur Mars, les couchers de soleil sont bleus.",true,"La fine poussière martienne diffuse la lumière autrement que notre atmosphère : le ciel autour du Soleil paraît bleuté au crépuscule."],
+["Un jour solaire sur Mercure dure environ 176 jours terrestres.",true,"Mercure tourne très lentement sur elle-même tout en filant autour du Soleil : entre deux levers de soleil, il se passe presque six mois."],
+["Vénus tourne dans le sens inverse de la plupart des planètes.",true,"Sur Vénus, le Soleil se lève à l’ouest. Uranus, elle, est couchée sur le côté."],
+["Plus d’un million de Terres tiendraient dans le Soleil.",true,"Son volume équivaut à environ 1,3 million de Terres."],
+["En apesanteur, les larmes ne tombent pas.",true,"Elles restent collées à l’œil et forment une bulle qui grossit."],
+["On a détecté de l’alcool dans l’espace.",true,"Dans de grands nuages de gaz près du centre de la Galaxie, les astronomes ont repéré du méthanol et de l’éthanol, très dilués."],
+["Voyager 1 est l’objet construit par l’humain le plus éloigné de la Terre.",true,"Lancée en 1977, elle a quitté la bulle d’influence du Soleil en 2012 et continue d’envoyer des données."],
+["Pluton n’a pas encore fait un tour complet autour du Soleil depuis sa découverte.",true,"Découverte en 1930, elle met environ 248 ans pour une orbite."],
+["Les traces de pas des astronautes sont toujours sur la Lune.",true,"Sans vent ni pluie pour les effacer, elles pourraient rester visibles pendant des millions d’années."],
+["On pense qu’il pleut des diamants à l’intérieur de Neptune et d’Uranus.",true,"Sous une pression énorme, le carbone peut se cristalliser. Des expériences en laboratoire ont reproduit ce phénomène."],
+["Le son ne se propage pas dans l’espace.",true,"Il lui faut de l’air ou un autre milieu pour transmettre les vibrations. Dans le vide, personne ne vous entend crier."],
+["L’Univers observable mesure environ 93 milliards d’années-lumière de diamètre.",true,"Il n’a que 13,8 milliards d’années, mais l’espace lui-même s’étire, ce qui repousse les objets lointains encore plus loin."],
+["Il fait plus chaud sur Vénus que sur Mercure.",true,"Malgré une distance au Soleil presque double, Vénus dépasse 460 °C à cause de son effet de serre intense."],
+["La Terre est plus proche du Soleil en janvier qu’en juillet.",true,"L’hiver de l’hémisphère nord vient de l’inclinaison de la Terre, pas de la distance : elle est au plus près début janvier."],
+["Une journée sur Terre est plus longue qu’il y a des millions d’années.",true,"La rotation de la Terre ralentit à cause des marées. Il y a 400 millions d’années, une année comptait environ 400 jours."],
+["Le Soleil est en réalité blanc.",true,"Il paraît jaune à cause de l’atmosphère, qui diffuse la lumière bleue. Vu depuis l’espace, il est blanc."],
+["Un bébé naît avec environ 300 os, un adulte n’en a que 206.",true,"Beaucoup d’os se soudent pendant la croissance, notamment ceux du crâne."],
+["Notre cœur bat environ 100 000 fois par jour.",true,"Cela fait plus de 2,5 milliards de battements au cours d’une vie de 70 ans."],
+["Il est presque impossible de se chatouiller soi-même.",true,"Le cerveau prévoit le geste et atténue la sensation : c’est la surprise qui rend les chatouilles efficaces."],
+["Le plus petit os du corps humain se trouve dans l’oreille.",true,"C’est l’étrier : il mesure environ 3 mm et transmet les sons à l’oreille interne."],
+["L’intestin grêle mesure plusieurs mètres de long.",true,"Environ 6 à 7 mètres une fois déroulé, avec une surface d’absorption énorme grâce à ses replis."],
+["Les empreintes digitales se forment avant la naissance.",true,"Elles apparaissent dans le ventre de la mère, vers le 3ᵉ ou 4ᵉ mois. Même les vrais jumeaux ont des empreintes différentes."],
+["Notre corps contient environ 37 000 milliards de cellules.",true,"Et à peu près autant de bactéries vivent sur nous et en nous, surtout dans l’intestin."],
+["Deux humains partagent environ 99,9 % de leur ADN.",true,"Cette infime différence de 0,1 % suffit à expliquer l’ensemble des variations entre nous."],
+["Nos cheveux poussent d’environ un centimètre par mois.",true,"Soit environ 12 à 15 cm par an, à un rythme qui varie selon l’âge et les personnes."],
+["Le cerveau est composé d’environ 75 % d’eau.",true,"Il ne pèse pourtant que 2 % du corps mais consomme environ 20 % de son énergie."],
+["Nous passons environ un tiers de notre vie à dormir.",true,"Pour une vie de 75 ans, cela représente environ 25 ans de sommeil."],
+["Un humain parcourt à pied plus de deux fois le tour de la Terre au cours de sa vie.",true,"En moyenne, on estime plus de 100 000 km de marche, alors que la Terre mesure environ 40 000 km de circonférence."],
+["On produit environ un litre de salive par jour.",true,"Elle aide à digérer, protège les dents et permet de goûter. La bouche sèche vite sans elle."],
+["Cléopâtre a vécu plus près de nous que de la construction de la Grande Pyramide.",true,"Environ 2 000 ans nous séparent d’elle, alors que 2 500 ans la séparent de la pyramide de Khéops."],
+["L’université d’Oxford est plus ancienne que l’Empire aztèque.",true,"On y enseigne depuis environ 1096, alors que Tenochtitlan, la capitale aztèque, a été fondée vers 1325."],
+["La guerre anglo-zanzibarie de 1896 a duré moins de 45 minutes.",true,"C’est la plus courte guerre connue : environ 38 minutes."],
+["La guerre de Cent Ans a duré 116 ans.",true,"De 1337 à 1453, avec de longues périodes de trêve."],
+["La Tour Eiffel devait être démontée au bout de 20 ans.",true,"Sa concession courait jusqu’en 1909. Elle a été sauvée notamment parce qu’elle servait d’antenne radio."],
+["La Statue de la Liberté est arrivée à New York en 214 caisses.",true,"Elle avait été démontée en France avant la traversée. Elle a été remontée sur place et inaugurée en 1886."],
+["La Joconde a été volée au Louvre en 1911.",true,"Le voleur, Vincenzo Peruggia, l’a gardée plus de deux ans avant d’être arrêté en Italie."],
+["Les statues grecques antiques étaient peintes de couleurs vives.",true,"Le marbre blanc que nous voyons aujourd’hui est le résultat de la disparition des pigments au fil des siècles."],
+["Les Vikings ont atteint l’Amérique du Nord vers l’an 1000.",true,"Des fouilles à L’Anse aux Meadows, à Terre-Neuve, l’ont prouvé, environ 500 ans avant Christophe Colomb."],
+["Les pyramides de Gizeh étaient recouvertes de pierre blanche polie.",true,"Ce revêtement de calcaire les faisait briller au soleil. Il a presque entièrement disparu avec le temps."],
+["La Grande Pyramide a été le plus haut monument du monde pendant environ 3 800 ans.",true,"Elle a été dépassée vers 1311 par la cathédrale de Lincoln, en Angleterre."],
+["Les Romains utilisaient de l’urine pour blanchir les toges.",true,"L’ammoniac qu’elle contient servait de détachant dans les teintureries."],
+["Le mot « quarantaine » vient d’une durée de 40 jours.",true,"Venise imposait aux navires d’attendre 40 jours au large pendant les épidémies de peste."],
+["Le mot « sandwich » vient du nom d’un comte anglais.",true,"Le comte de Sandwich aurait réclamé de la viande entre deux tranches de pain pour continuer à jouer aux cartes sans se salir les doigts."],
+["La France est le pays qui compte le plus de fuseaux horaires.",true,"Grâce à ses territoires d’outre-mer, elle en a 12 (13 avec la Terre Adélie)."],
+["La Tour Eiffel est repeinte à la main environ tous les sept ans.",true,"Il faut environ 60 tonnes de peinture pour la recouvrir."],
+["Les Aztèques buvaient du chocolat sans sucre, épicé.",true,"Leur boisson était amère, mousseuse et parfois pimentée. Les fèves de cacao servaient aussi de monnaie."],
+["Le TGV a dépassé les 570 km/h en 2007.",true,"Le record du monde sur rail conventionnel est de 574,8 km/h."],
+["En 1582, dix jours ont disparu du calendrier en France.",true,"Lors du passage au calendrier grégorien, on est passé du 9 au 20 décembre 1582 pour rattraper le décalage accumulé."],
+["Le Concorde traversait l’Atlantique en moins de quatre heures.",true,"À plus de deux fois la vitesse du son, il reliait Paris à New York en environ 3 h 30."],
+["Les premières cartes de Noël datent de 1843.",true,"Henry Cole, un fonctionnaire anglais, en a fait imprimer environ un millier à Londres."],
+["Le premier SMS de l’histoire disait « Merry Christmas ».",true,"Il a été envoyé le 3 décembre 1992 par un ingénieur britannique à un directeur de Vodafone."],
+["Le premier site web a été mis en ligne en 1991.",true,"Il a été créé au CERN, près de Genève, par Tim Berners-Lee, et expliquait comment fonctionnait le web."],
+["L’ENIAC, un des premiers ordinateurs électroniques, pesait environ 27 tonnes.",true,"Il occupait toute une grande salle et fonctionnait avec près de 18 000 tubes à vide."],
+["Le nom Google vient du mot « googol ».",true,"Un googol est le nombre 1 suivi de 100 zéros. Les fondateurs ont choisi ce nom pour évoquer l’immensité des données."],
+["La première vidéo YouTube dure moins de 20 secondes.",true,"« Me at the zoo », mise en ligne en avril 2005, montre l’un des fondateurs devant des éléphants."],
+["Le Père Noël n’a pas été inventé par Coca-Cola.",true,"Le personnage en rouge existait déjà : la marque l’a seulement beaucoup popularisé dans les années 1930."],
+["Rudolph, le renne au nez rouge, a été créé pour un grand magasin.",true,"Robert May l’a imaginé en 1939 pour une brochure de Noël des magasins Montgomery Ward."],
+["La chanson « Les douze jours de Noël » énumère 364 cadeaux.",true,"En additionnant tous les cadeaux de chaque couplet, on arrive à 364."],
+["Au Japon, manger du poulet frit de KFC à Noël est une tradition.",true,"Une campagne publicitaire de 1974 a lancé cette mode : on réserve son menu des semaines à l’avance."],
+["En Islande, treize Pères Noël farceurs rendent visite aux enfants.",true,"Les « Yule Lads » arrivent un par nuit pendant les 13 nuits précédant Noël, chacun avec sa petite spécialité de bêtise."],
+["Les baies de gui sont toxiques.",true,"Mieux vaut les garder hors de portée des enfants et des animaux, même si la plante est très décorative."],
+["La poinsettia, plante de Noël, vient du Mexique.",true,"On l’appelle aussi « étoile de Noël ». Ses fameuses « fleurs » rouges sont en fait des feuilles colorées."],
+["La première mention connue d’un sapin de Noël date de 1521 en Alsace.",true,"Les comptes de la ville de Sélestat mentionnent l’achat d’arbres, souvent cités comme la première trace écrite."],
+["Les rennes du Père Noël seraient plutôt des femelles.",true,"Les mâles perdent leurs bois en début d’hiver. Ceux qui en portent à Noël sont donc le plus souvent des femelles."],
+["En Catalogne, on cache un personnage qui fait ses besoins dans la crèche.",true,"Le « caganer » est une vieille tradition catalane : on le place discrètement dans la scène de la Nativité, et on le cherche."],
+["En Norvège, on cache les balais le soir de Noël.",true,"Selon la tradition, les sorcières et les mauvais esprits sortent ce soir-là et pourraient les voler."],
+["Le mont Everest grandit d’environ quatre millimètres par an.",true,"Les plaques indienne et eurasienne continuent de se pousser l’une contre l’autre."],
+["L’Alaska est à la fois l’État américain le plus à l’ouest et le plus à l’est.",true,"Les îles Aléoutiennes franchissent le 180ᵉ méridien, la frontière entre ouest et est."],
+["Le lac Baïkal contient environ un cinquième de l’eau douce liquide de surface de la planète.",true,"C’est aussi le lac le plus profond du monde, avec plus de 1 600 mètres."],
+["L’Antarctique contient la majorité de l’eau douce de la planète.",true,"Environ 70 % de l’eau douce mondiale est stockée dans sa glace."],
+["Le Sahara était verdoyant il y a quelques milliers d’années.",true,"Il y a environ 6 000 à 11 000 ans, il y avait des lacs, des herbes et des animaux comme des hippopotames."],
+["La Russie s’étend sur onze fuseaux horaires.",true,"Quand il est 8 h à Kaliningrad, il est 18 h au Kamtchatka."],
+["Le Vatican est le plus petit pays du monde.",true,"Il couvre environ 0,44 km², soit à peu près la taille d’un grand parc urbain."],
+["Istanbul est à cheval sur deux continents.",true,"La ville s’étend de part et d’autre du Bosphore, entre l’Europe et l’Asie : on peut changer de continent en traversant en bateau."],
+["Le plus vieux pin vivant a environ 4 800 ans.",true,"Il pousse dans les montagnes de Californie. C’est un pin bristlecone, un arbre à la croissance lentissime."],
+["Le Canada a la plus longue côte du monde.",true,"Plus de 200 000 km, grâce à ses milliers d’îles."],
+["L’Indonésie compte plus de 17 000 îles.",true,"Environ 6 000 d’entre elles seulement sont habitées."],
+["Le Chili mesure environ 4 300 km de long pour moins de 200 km de large en moyenne.",true,"C’est l’un des pays les plus longs et les plus étroits du monde, coincé entre la cordillère des Andes et l’océan Pacifique."],
+["En Suède, un hôtel de glace est reconstruit chaque hiver.",true,"L’Icehotel de Jukkasjärvi est fait de glace de la rivière Torne. Il fond au printemps et renaît l’hiver suivant."],
+["Aux Pays-Bas, il y a plus de vélos que d’habitants.",true,"Environ 23 millions de vélos pour moins de 18 millions d’habitants."],
+["En Suisse, il est interdit de n’avoir qu’un seul cochon d’Inde.",true,"Ces animaux sociaux souffrent de solitude : la loi impose d’en avoir au moins deux."],
+["À Singapour, la vente de chewing-gum est très encadrée.",true,"Elle est interdite depuis 1992, avec une exception pour les chewing-gums à usage médical."],
+["En Bulgarie, secouer la tête de gauche à droite veut dire oui.",true,"Et hocher la tête de haut en bas veut dire non, à l’inverse de la plupart des pays."],
+["Au Japon, il existe plus de deux millions de distributeurs automatiques.",true,"On y trouve de tout : boissons chaudes ou froides, plats, parapluies…"],
+["Il existe une île au Japon peuplée surtout de chats.",true,"Sur Tashirojima, les chats sont bien plus nombreux que les habitants, car les pêcheurs les considèrent comme des porte-bonheur."],
+["Le ketchup a été vendu comme médicament.",true,"En 1834, un médecin américain l’a proposé en pilules contre les troubles digestifs."],
+["Les carottes étaient autrefois violettes ou jaunes.",true,"La carotte orange que nous connaissons s’est imposée plus tard, par sélection."],
+["La noix de muscade peut être hallucinogène à forte dose.",true,"Elle contient de la myristicine : en grande quantité, elle provoque nausées, vertiges et hallucinations. À ne surtout pas essayer !"],
+["Le chocolat est dangereux pour les chiens.",true,"La théobromine qu’il contient est toxique pour eux, et plus le chocolat est noir, plus c’est dangereux."],
+["Les graines de la fraise sont à l’extérieur du fruit.",true,"Ces petits points sont en réalité de minuscules fruits secs appelés akènes."],
+["Un poivron rouge contient plus de vitamine C qu’une orange.",true,"À poids égal, environ deux à trois fois plus."],
+["Le piquant du piment est une sensation de douleur, pas un goût.",true,"La capsaïcine active les mêmes récepteurs que la chaleur, d’où l’impression de brûlure."],
+["Le wasabi servi dans beaucoup de restaurants est en réalité du raifort.",true,"Le vrai wasabi est cher et difficile à cultiver, donc souvent remplacé par du raifort coloré en vert."],
+["Les cacahuètes ne sont pas des noix.",true,"Ce sont des légumineuses, de la même famille que les haricots et les pois."],
+["La banane est légèrement radioactive.",true,"Elle contient du potassium, dont une toute petite partie est radioactive. Sans danger : il faudrait en manger des millions."],
+["Une pomme est composée d’environ 25 % d’air.",true,"Voilà pourquoi elle flotte dans l’eau."],
+["L’oignon fait pleurer à cause d’un gaz irritant.",true,"En le coupant, on libère un composé soufré volatil qui irrite les yeux. Le couper sous l’eau limite l’effet."],
+["Le safran est l’épice la plus chère du monde.",true,"Il faut des milliers de fleurs de crocus, cueillies à la main, pour obtenir quelques grammes."],
+["Le café est la graine d’un fruit.",true,"Ce sont les noyaux d’une sorte de petite cerise, le fruit du caféier."],
 ["Le miel peut se conserver pendant des milliers d’années.",true,"Il contient très peu d’eau et il est acide : les bactéries n’y survivent pas."],
-["Une grenouille d’Amérique du Nord survit à la congélation.",true,"La grenouille des bois peut geler en hiver et « redémarrer » au printemps."],
-["Les astronautes peuvent grandir de quelques centimètres dans l’espace.",true,"Sans gravité, la colonne vertébrale se décompresse. Ils retrouvent leur taille à leur retour."],
-["Les chauves-souris sont aveugles.",false,"Elles voient très bien. En plus de la vue, beaucoup utilisent l’écholocalisation."],
-["Les autruches enfouissent leur tête dans le sable quand elles ont peur.",false,"Elles retournent leurs œufs dans des nids creusés dans le sol, d’où la légende."],
-["La Grande Muraille de Chine est visible à l’œil nu depuis la Lune.",false,"Elle est beaucoup trop étroite pour être distinguée à cette distance."],
-["Nous n’utilisons que 10 % de notre cerveau.",false,"Nous utilisons l’ensemble de notre cerveau, à des moments différents."],
-["Les poissons rouges ont une mémoire de trois secondes.",false,"Ils peuvent se souvenir de choses pendant des semaines, voire des mois."],
-["Les taureaux sont attirés par la couleur rouge.",false,"Ils réagissent au mouvement de la cape, pas à sa couleur."],
-["Napoléon était minuscule.",false,"Il mesurait environ 1,68 m, une taille normale pour l’époque. Une confusion entre pouces français et anglais a nourri la légende."],
+["Il y a plus de 1 000 sortes de fromages en France.",true,"Les estimations vont de 1 000 à 1 500 variétés selon la façon de compter."],
+["Le diamant peut brûler.",true,"À plus de 700 °C, en présence d’oxygène, il se transforme en gaz carbonique : un diamant est fait de carbone pur."],
+["On peut manger de l’or.",true,"L’or alimentaire, noté E175, décore gâteaux et boissons. Il est inerte pour le corps et ressort tel quel."],
+["Il tombe environ cent éclairs par seconde sur la planète.",true,"Soit plusieurs millions par jour dans le monde."],
+["Un verre d’eau contient plus de molécules que tous les océans ne contiennent de verres d’eau.",true,"Environ 8 × 10²⁴ molécules dans un verre, contre environ 5 × 10²¹ verres d’eau dans les océans."],
+["Un Rubik’s Cube a plus de 43 milliards de milliards de positions.",true,"Exactement 43 252 003 274 489 856 000, et pourtant, il se résout en 20 mouvements au maximum depuis n’importe quelle position."],
+["Il est possible de plier une feuille de papier plus de sept fois.",true,"Le record est de 12 plis, obtenu en 2002 avec un très long rouleau de papier."],
+["Le son se propage plus vite dans l’eau que dans l’air.",true,"Environ quatre fois plus vite, ce qui permet aux baleines de communiquer sur de très longues distances."],
+["Le zéro absolu est d’environ −273 °C.",true,"C’est la température la plus basse possible : −273,15 °C. Aucune matière ne peut être plus froide."],
+["Il existe plus de façons de mélanger un jeu de 52 cartes que d’atomes sur Terre.",true,"Il y a environ 8 × 10⁶⁷ ordres possibles : un paquet bien mélangé n’a très probablement jamais existé auparavant."],
+["Les vitraux anciens sont plus épais en bas parce que le verre coule.",false,"Le verre ne s’écoule pas à température ambiante. Les vitres anciennes étaient simplement inégales, et on posait souvent le côté épais en bas."],
+["La langue possède des zones distinctes pour chaque saveur.",false,"Toutes les saveurs peuvent être perçues sur toute la langue. Cette carte du goût vient d’une mauvaise interprétation d’une étude ancienne."],
+["Un chewing-gum avalé reste sept ans dans l’estomac.",false,"Il n’est pas digéré mais il est évacué avec le reste en quelques jours."],
+["Les étoiles filantes sont des étoiles qui tombent.",false,"Ce sont de petits grains de roche ou de poussière qui brûlent en entrant dans l’atmosphère à grande vitesse."],
+["L’Everest est la montagne la plus haute du monde si on mesure depuis la base.",false,"Mesuré depuis le fond de l’océan, le Mauna Kea, à Hawaï, dépasse 10 000 mètres."],
+["Sans combinaison dans l’espace, le corps humain explose.",false,"On perdrait connaissance en une quinzaine de secondes, mais le corps ne gonfle pas jusqu’à exploser."],
+["Mettre du sel dans l’eau la fait bouillir beaucoup plus vite.",false,"Le sel élève très légèrement la température d’ébullition : l’effet est minuscule dans une casserole."],
+["Un an de chien équivaut à sept ans de vie humaine.",false,"Le rapport varie selon la taille et l’âge : à un an, un chien est déjà un adolescent, pas un enfant de sept ans."],
+["Le cri du canard ne fait pas d’écho.",false,"Il en fait un, mais il est plus difficile à entendre. Des acousticiens l’ont démontré."],
+["Toutes les abeilles meurent après avoir piqué.",false,"Seules les abeilles mellifères ouvrières meurent après avoir piqué un mammifère. Guêpes et bourdons peuvent piquer plusieurs fois."],
+["Les araignées sont des insectes.",false,"Ce sont des arachnides : elles ont huit pattes et deux parties de corps, alors que les insectes ont six pattes."],
+["Une face de la Lune reste toujours dans le noir.",false,"La face cachée est cachée à nos yeux, mais pas à la lumière : elle est autant éclairée par le Soleil que l’autre."],
+["Le Soleil se lève plein est tous les jours de l’année.",false,"Il ne se lève plein est qu’aux équinoxes, en mars et en septembre. L’été, il se lève plus au nord-est."],
+["Le Sahara est le plus grand désert du monde.",false,"Le plus grand est l’Antarctique, avec environ 14 millions de km². Un désert se définit par le manque de précipitations."],
+["Les manchots vivent au pôle Nord.",false,"Ils vivent dans l’hémisphère sud, notamment en Antarctique. Au nord, on trouve d’autres oiseaux marins, les pingouins."],
+["Les éléphants ont peur des souris.",false,"Aucune étude sérieuse ne le prouve : c’est une légende populaire, sans preuve."],
+["Le Mont Blanc est le plus haut sommet du monde.",false,"C’est l’Everest, à 8 849 m. Le Mont Blanc culmine à environ 4 800 m, mais c’est le plus haut sommet des Alpes."],
+["Les ongles et les cheveux poussent après la mort.",false,"C’est une illusion : la peau se rétracte en se déshydratant, ce qui fait paraître les ongles et les poils plus longs."],
+["L’éclair ne frappe jamais deux fois au même endroit.",false,"L’Empire State Building est frappé en moyenne une vingtaine de fois par an."],
+["Les hérissons adorent le lait.",false,"Ils sont intolérants au lactose : mieux vaut leur donner de l’eau fraîche."],
+["Les dromadaires ont deux bosses.",false,"Le dromadaire n’en a qu’une. C’est le chameau de Bactriane qui en a deux."],
+["Les lemmings se jettent volontairement du haut des falaises.",false,"C’est un mythe popularisé par un documentaire de 1958, dont les scènes avaient été mises en scène."],
+["On perd la majeure partie de sa chaleur par la tête.",false,"La perte est proportionnelle à la surface exposée : la tête n’en représente qu’environ 7 à 10 %."],
+["Les chameaux stockent de l’eau dans leurs bosses.",false,"Elles contiennent de la graisse, qui sert de réserve d’énergie. Ils tiennent sans boire parce qu’ils perdent très peu d’eau."],
+["Les vikings portaient des casques à cornes.",false,"Aucune preuve archéologique : cette image s’est surtout popularisée au XIXᵉ siècle, notamment avec les costumes d’opéra."],
+["Une pièce lâchée du haut de l’Empire State Building peut tuer quelqu’un.",false,"Sa vitesse limite est trop faible pour causer des dégâts graves : elle pique, tout au plus."],
+["Les cheveux peuvent blanchir en une nuit à cause d’un choc.",false,"Un cheveu déjà poussé ne change pas de couleur du jour au lendemain : la couleur est fixée dans le cheveu."],
+["Napoléon était minuscule.",false,"Il mesurait environ 1,68 m, une taille tout à fait normale à l’époque. Une confusion entre pouces français et anglais a nourri la légende."],
+["Les taureaux sont attirés par la couleur rouge.",false,"Ils réagissent au mouvement de la cape, pas à sa couleur : les taureaux voient mal le rouge."],
+["Les chauves-souris sont aveugles.",false,"Elles voient très bien. En plus de la vue, beaucoup utilisent l’écholocalisation pour se repérer dans le noir."],
+["On avale huit araignées par an pendant son sommeil.",false,"C’est une légende : les vibrations de notre respiration éloignent les araignées des humains endormis."],
 ["Les caméléons changent de couleur surtout pour se camoufler.",false,"Cela leur sert surtout à communiquer et à réguler leur température."],
-["On avale huit araignées par an pendant son sommeil.",false,"C’est une légende : les araignées évitent les humains endormis."],
-["Les chats retombent toujours sur leurs pattes sans se blesser.",false,"Ils se retournent en l’air grâce à un réflexe, mais peuvent se blesser lors d’une chute."],
-["Le sucre rend les enfants hyperactifs.",false,"Les études scientifiques n’ont pas confirmé ce lien."],
-["La foudre ne frappe jamais deux fois au même endroit.",false,"L’Empire State Building est frappé une vingtaine de fois par an."],
-["Les chameaux stockent de l’eau dans leurs bosses.",false,"Elles contiennent de la graisse, qui sert de réserve d’énergie."],
-["Les vikings portaient des casques à cornes.",false,"Aucune preuve archéologique : cette image s’est surtout popularisée au XIXᵉ siècle."],
+["Les poissons rouges ont une mémoire de trois secondes.",false,"Ils peuvent se souvenir de choses pendant des mois, et apprendre à reconnaître leur soigneur."],
+["La Grande Muraille de Chine est visible à l’œil nu depuis la Lune.",false,"Elle est beaucoup trop étroite pour être distinguée depuis la Lune, située à environ 384 000 km."],
 ["Le sang humain est bleu dans les veines.",false,"Il est toujours rouge. Les veines paraissent bleutées à cause de la façon dont la lumière traverse la peau."],
-["Einstein était mauvais en maths à l’école.",false,"Il excellait en mathématiques depuis son plus jeune âge."],
-["Les ongles et les cheveux continuent de pousser après la mort.",false,"La peau se rétracte, ce qui donne cette impression."],
-["Les moustiques mâles piquent aussi.",false,"Seules les femelles piquent : elles ont besoin de sang pour pondre."],
-["Les hérissons adorent le lait.",false,"Ils sont intolérants au lactose : mieux vaut leur donner de l’eau."],
-["Les dromadaires ont deux bosses.",false,"Le dromadaire en a une. C’est le chameau de Bactriane qui en a deux."],
-["Les lemmings se jettent volontairement du haut des falaises.",false,"C’est un mythe, popularisé par un documentaire de 1958."],
-["Les chiens ne voient qu’en noir et blanc.",false,"Ils distinguent surtout le bleu et le jaune, mais voient moins bien le rouge et le vert."],
-["Les cheveux peuvent blanchir en une nuit à cause d’un choc.",false,"Un cheveu déjà poussé ne change pas de couleur du jour au lendemain."],
-["Craquer ses doigts donne de l’arthrose.",false,"Les études n’ont pas montré de lien."],
-["Une pièce lâchée du haut de l’Empire State Building peut tuer quelqu’un.",false,"Sa vitesse limite est trop faible pour causer des dégâts graves."],
-["On perd la majeure partie de sa chaleur par la tête.",false,"La perte est proportionnelle à la surface exposée : environ 7 à 10 % pour la tête."],
-["La tomate est un légume au sens botanique.",false,"Botaniquement, c’est un fruit."],
-["Le Mont Blanc est le plus haut sommet du monde.",false,"C’est l’Everest, à 8 849 m. Le Mont Blanc culmine à environ 4 800 m."],
-["Les manchots vivent au pôle Nord.",false,"Ils vivent dans l’hémisphère sud, notamment en Antarctique. Au nord, on trouve d’autres oiseaux marins, les pingouins."]];
+["Les chats retombent toujours sans se blesser.",false,"Ils se retournent en l’air grâce à un réflexe, mais peuvent se blesser lors d’une chute, surtout de faible hauteur où ils n’ont pas le temps de se retourner."],
+["Le sucre rend les enfants hyperactifs.",false,"Les études scientifiques n’ont pas confirmé ce lien : l’excitation vient surtout du contexte (fêtes, goûters)."],
+["Craquer ses doigts donne de l’arthrose.",false,"Les études n’ont pas montré de lien. Le bruit vient de petites bulles de gaz dans l’articulation."],
+["Les pieuvres ont quatre cœurs.",false,"Elles en ont trois : deux pour les branchies et un pour le reste du corps."],
+["Les girafes ont une vingtaine de vertèbres au cou.",false,"Elles n’en ont que sept, comme nous : elles sont simplement beaucoup plus longues."],
+["Le TGV a battu le record du monde de vitesse sur rail à 380 km/h.",false,"Le record de 2007 est de 574,8 km/h, bien au-dessus."],
+["La Tour Eiffel est repeinte tous les ans.",false,"Elle l’est environ tous les sept ans, en une opération de plusieurs mois et d’environ 60 tonnes de peinture."],
+["Le premier SMS de l’histoire disait « Bonne année ».",false,"Il disait « Merry Christmas » et a été envoyé en décembre 1992."],
+["Un colibri bat des ailes environ 5 fois par seconde.",false,"Il les bat plus de 50 fois par seconde, parfois plus de 70."],
+["Le Vatican est le deuxième plus petit pays du monde.",false,"C’est le plus petit, avec environ 0,44 km²."],
+["Les koalas dorment environ 4 heures par jour.",false,"Ils dorment plus de 18 heures par jour pour économiser l’énergie que leur apporte l’eucalyptus."],
+["La guerre de Cent Ans a duré exactement 100 ans.",false,"Elle a duré 116 ans, de 1337 à 1453."],
+["Le Concorde mettait environ 8 heures pour relier Paris à New York.",false,"Environ 3 h 30 : c’est ce qui le rendait si spécial, contre 7 à 8 h pour un avion classique."],
+["Un nuage cumulus moyen pèse à peu près autant qu’une plume.",false,"Il pèse environ 500 tonnes, soit le poids de centaines de voitures."],
+["Le Soleil représente 50 % de la masse du système solaire.",false,"Il en représente environ 99 %."],
+["La Statue de la Liberté est arrivée à New York en un seul morceau.",false,"Elle est arrivée démontée, dans 214 caisses, et a été remontée sur place."],
+["Une journée sur Vénus est plus courte qu’une année sur Vénus.",false,"C’est l’inverse : le jour y dure environ 243 jours terrestres, l’année environ 225."],
+["Le plus petit os du corps humain se trouve dans le pied.",false,"Il se trouve dans l’oreille : c’est l’étrier, d’environ 3 mm."],
+["Un escargot n’a pas de dents.",false,"Sa langue râpeuse, la radula, en porte des milliers."],
+["L’Everest grandit d’environ 4 mètres par an.",false,"Environ 4 millimètres par an, soit mille fois moins."],
+["Les requins sont apparus après les arbres.",false,"Ils sont plus anciens : environ 450 millions d’années contre 350 millions pour les arbres."],
+["Le premier site web est né en 2005.",false,"Il date de 1991, au CERN. En 2005, c’est la première vidéo YouTube."],
+["Les flamants roses naissent déjà roses.",false,"Ils naissent gris. Leur couleur vient de leur alimentation."],
+["Les Vikings sont arrivés en Amérique en 1492, avec Christophe Colomb.",false,"Ils y étaient déjà vers l’an 1000, environ 500 ans plus tôt."],
+["La Joconde a été volée en 1811.",false,"Elle a été volée en 1911, par Vincenzo Peruggia."],
+["L’ENIAC pesait environ 27 kilos.",false,"Il pesait environ 27 tonnes, mille fois plus."],
+["Le Chili est un pays plus large que long.",false,"C’est l’inverse : environ 4 300 km de long pour moins de 200 km de large en moyenne."],
+["Neptune a déjà fait plus de dix tours autour du Soleil depuis sa découverte.",false,"Un seul : découverte en 1846, elle a bouclé sa première orbite en 2011."],
+["Dans un jeu de 52 cartes, il n’y a que quelques millions d’ordres possibles.",false,"Il y en a environ 8 × 10⁶⁷, un nombre qui dépasse celui des atomes sur Terre."],
+["Les rennes du Père Noël seraient plutôt des mâles.",false,"Les mâles perdent leurs bois avant Noël : ceux qui en portent sont plutôt des femelles."],
+["Les rats peuvent vomir comme les chiens.",false,"Ils en sont incapables, comme les chevaux."],
+["Le miel périme au bout de deux ans.",false,"Bien conservé, il peut rester comestible pendant des milliers d’années."],
+["Les cacahuètes sont des noix.",false,"Ce sont des légumineuses, de la famille des haricots et des pois."],
+["Les premières cartes de Noël datent du XVᵉ siècle.",false,"Elles datent de 1843, en Angleterre."],
+["Le lac Baïkal est le plus petit lac d’eau douce de Russie.",false,"C’est le plus profond du monde, et il contient environ un cinquième de l’eau douce liquide de surface."]];
 function vStore(){
  const its=L(D.shop).filter(i=>!i.exp),todo=its.filter(i=>!i.done),done=its.filter(i=>i.done);
  const row=i=>{const rs=sRec(i),q=rs.length?rs.map(r=>sQty(i,r)).filter(Boolean).join(" + "):sQty(i,"");return`<label class="st-it ${i.done?"done":""}"><input type="checkbox" data-p="shop/${i.id}/done" data-chk="1" ${i.done?"checked":""}><span>${esc(i.name)}${q?` <small>× ${esc(q)}</small>`:""}</span></label>`};
@@ -328,36 +502,39 @@ function vGames(){
  const ws=L(D.jeux&&D.jeux.words).filter(w=>!w.used),us=L(D.jeux&&D.jeux.words).filter(w=>w.used),mine=ws.filter(w=>w.by&&w.by===S.me),by={};ws.forEach(w=>{const k=P(w.by)?P(w.by).n:"?";by[k]=(by[k]||0)+1});
  const cs=contrib(),nT=T.teams.length,ct=(id,i)=>T.asg&&T.asg[id]!=null&&T.asg[id]<nT?T.asg[id]:i%nT,lc=S.lc||0,cat=LIB[lc],me=w=>ws.some(x=>x.w.toLowerCase()===w.toLowerCase()&&S.me&&x.by===S.me),ot=w=>ws.some(x=>x.w.toLowerCase()===w.toLowerCase()&&!(S.me&&x.by===S.me)),lib=`<button class="lk0" data-act="tog" data-k="lib" style="margin-top:8px">📚 Bibliothèque de mots (besoin d’inspiration ?) ${S.o.lib?"▴":"▾"}</button>${S.o.lib?`<div class="row" style="margin:8px 0">${LIB.map((c,i)=>`<button class="g ${i===lc?"on":""}" data-act="libc" data-t="${i}">${c[0]}</button>`).join("")}</div><div class="sub" style="margin-bottom:6px">Touche un mot pour l’ajouter (ou le retirer). Les mots déjà choisis par les autres joueurs sont masqués.</div><div class="chips">${cat[1].filter(w=>!ot(w)).map(w=>`<span class="chip t ${me(w)?"on":""}" data-act="libw" data-w="${esc(w)}">${esc(w)}</span>`).join("")}</div><button class="g" style="margin-top:10px" data-act="libr">🎲 Ajouter 5 mots au hasard</button>`:""}`;
  const usedCard=us.length?`<div class="card"><button class="tg" style="border:0;margin:0;padding:0" data-act="tog" data-k="usedw"><b>♻️ Mots déjà utilisés</b><span class="sub">${us.length} ${S.o.usedw?"▴":"▾"}</span></button>${S.o.usedw?`<div class="sub" style="margin:6px 0">Ces mots ont été joués : ils sont exclus de la prochaine partie. Touche un mot pour le remettre en jeu.</div><div class="chips">${us.map(w=>`<span class="chip t" data-act="reuse" data-id="${w.id}">${esc(w.w)}</span>`).join("")}</div><button class="g" style="margin-top:10px" data-act="reuseAll">♻️ Tout remettre en jeu</button>`:""}</div>`:"";
- return gsel()+`<div class="card"><h2>⏱️ Time’s Up</h2><div class="sub">Chacun ajoute des mots (personnes, objets, films…). 3 manches avec les mêmes mots : décrire, un seul mot, mimer.</div><div class="sub" style="margin-top:8px">${meSel()}</div><div class="row" style="margin-top:8px"><div class="grow"><input id="addW" placeholder="Un mot ou une expression" style="width:100%"></div><button class="b" data-act="addW">Ajouter</button></div><div class="sub" style="margin-top:8px">${ws.length} mot(s)${Object.keys(by).length?" · "+Object.entries(by).map(([k,v])=>esc(k)+" "+v).join(", "):""}</div>${mine.length?`<button class="lk0" data-act="tog" data-k="myw">Mes mots (${mine.length}) ${S.o.myw?"▴":"▾"}</button>`:""}${S.o.myw?`<div class="chips" style="margin-top:6px">${mine.map(w=>`<span class="chip">${esc(w.w)} <button class="x" style="padding:0 0 0 4px;font-size:14px" data-act="delW" data-id="${w.id}">✕</button></span>`).join("")}</div>`:""}${lib}</div>${usedCard}
- <div class="card"><h2>Équipes</h2><div class="row"><span class="sub">Équipes</span><select data-act="tuN">${[2,3,4].map(n=>`<option ${n===nT?"selected":""}>${n}</option>`).join("")}</select><span class="sub">Temps</span><select id="tuSec">${[20,30,45,60].map(s=>`<option ${s===T.sec?"selected":""}>${s}</option>`).join("")}</select><span class="sub">s</span></div>${T.teams.map((n,i)=>`<div style="margin-top:6px"><input id="tn${i}" value="${esc(n)}" style="width:100%"></div>`).join("")}<div class="sub" style="margin:12px 0 6px">Qui joue avec qui ? (les personnes qui ont ajouté des mots)</div>${cs.length?cs.map((id,i)=>`<div class="row" style="justify-content:space-between;margin-bottom:4px"><span>${esc(P(id).n)}</span><select data-act="tuAsg" data-id="${id}">${T.teams.map((t,k)=>`<option value="${k}" ${k===ct(id,i)?"selected":""}>${esc(t)}</option>`).join("")}</select></div>`).join("")+'<button class="g" style="margin-top:6px" data-act="tuShuf">🎲 Répartir au hasard</button>':'<div class="empty">Personne n’a encore ajouté de mots.</div>'}<button class="b" style="width:100%;margin-top:12px;min-height:48px" data-act="tuStart">▶ Lancer la partie</button><div class="sub" style="margin-top:6px">Se joue sur un seul téléphone, qu’on se passe entre les équipes. Il faut au moins 4 mots et un joueur par équipe.</div></div>`}
+ return gsel()+how("tu",HOW_TU)+`<div class="card"><h2>⏱️ Time’s Up</h2><div class="sub">Chacun ajoute des mots (personnes, objets, films…). 3 manches avec les mêmes mots : décrire, un seul mot, mimer.</div><div class="sub" style="margin-top:8px">${meSel()}</div><div class="row" style="margin-top:8px"><div class="grow"><input id="addW" placeholder="Un mot ou une expression" style="width:100%"></div><button class="b" data-act="addW">Ajouter</button></div><div class="sub" style="margin-top:8px">${ws.length} mot(s)${Object.keys(by).length?" · "+Object.entries(by).map(([k,v])=>esc(k)+" "+v).join(", "):""}</div>${mine.length?`<button class="lk0" data-act="tog" data-k="myw">Mes mots (${mine.length}) ${S.o.myw?"▴":"▾"}</button>`:""}${S.o.myw?`<div class="chips" style="margin-top:6px">${mine.map(w=>`<span class="chip">${esc(w.w)} <button class="x" style="padding:0 0 0 4px;font-size:14px" data-act="delW" data-id="${w.id}">✕</button></span>`).join("")}</div>`:""}${lib}</div>${usedCard}
+ <div class="card"><h2>Équipes</h2><div class="row"><span class="sub">Équipes</span><select data-act="tuN">${[2,3,4].map(n=>`<option ${n===nT?"selected":""}>${n}</option>`).join("")}</select><span class="sub">Temps</span><select id="tuSec">${[20,30,45,60].map(s=>`<option ${s===T.sec?"selected":""}>${s}</option>`).join("")}</select><span class="sub">s</span></div>${T.teams.map((n,i)=>`<div style="margin-top:6px"><input id="tn${i}" value="${esc(n)}" style="width:100%"></div>`).join("")}<div class="sub" style="margin:12px 0 6px">Qui joue avec qui ? (les personnes qui ont ajouté des mots)</div>${cs.length?cs.map((id,i)=>`<div class="row" style="justify-content:space-between;margin-bottom:4px"><span>${esc(P(id).n)}</span><select data-act="tuAsg" data-id="${id}">${T.teams.map((t,k)=>`<option value="${k}" ${k===ct(id,i)?"selected":""}>${esc(t)}</option>`).join("")}</select></div>`).join("")+'<button class="g" style="margin-top:6px" data-act="tuShuf">🎲 Répartir au hasard</button>':'<div class="empty">Personne n’a encore ajouté de mots.</div>'}<button class="b" style="width:100%;margin-top:12px;min-height:48px" data-act="tuStart">▶ Lancer la partie</button><div class="sub" style="margin-top:6px">Se joue sur un seul téléphone, qu’on se passe entre les équipes. Il faut au moins 4 mots et un joueur par équipe.</div><button class="g" style="margin-top:12px" data-act="tuReset">🧹 Réinitialiser (mots et équipes)</button></div>`}
 
-const catPool=()=>{const ed=(D.jeux||{}).catEd||{};return[...PBC.map((x,i)=>ed[i]&&ed[i].off?null:((ed[i]&&ed[i].c)||x)),...L((D.jeux||{}).cats).map(x=>x.c)].filter(Boolean)};
+const catPool=mode=>{const ed=(D.jeux||{}).catEd||{},g=PBC.map((x,i)=>ed[i]&&ed[i].off?null:((ed[i]&&ed[i].c)||x)).filter(Boolean),m=L((D.jeux||{}).cats).map(x=>x.c).filter(Boolean);return mode==="mine"?m:mode==="game"?g:[...g,...m]};
+const ptsOf=v=>v&&typeof v==="object"?2*(v.u||0)+(v.c||0)-(v.b||0):(+v||0);
+const pbTot=id=>Object.values(((D.jeux||{}).pbS||{})[id]||{}).reduce((s,v)=>s+ptsOf(v),0);
 function catCard(){
  const ed=(D.jeux||{}).catEd||{},mine=L((D.jeux||{}).cats),op=S.o.pbc,sel=S.o.cedit;
- const items=[...PBC.map((x,i)=>({k:"l"+i,t:(ed[i]&&ed[i].c)||x,off:!!(ed[i]&&ed[i].off),mod:!!(ed[i]&&ed[i].c),path:"jeux/catEd/"+i+"/c"})),...mine.map(x=>({k:"c"+x.id,t:x.c,off:false,mod:true,cust:true,path:"jeux/cats/"+x.id+"/c"}))];
- const n=items.filter(x=>!x.off).length,cur=items.find(x=>x.k===sel);
- const editor=cur?`<div style="border:1px solid var(--line);border-radius:10px;padding:10px;margin:10px 0"><label class="f" style="margin-top:0">Modifier la catégorie</label>${inp(cur.path,cur.t,"",'style="width:100%"')}<div class="row" style="margin-top:8px">${cur.cust?`<button class="g" data-act="delCat" data-id="${cur.k.slice(1)}">🗑 Supprimer</button>`:`<button class="g" data-act="catOff" data-i="${cur.k.slice(1)}">${cur.off?"✅ Réactiver":"🚫 Désactiver"}</button>${cur.mod?`<button class="g" data-act="catReset" data-i="${cur.k.slice(1)}">↺ Original</button>`:""}`}<button class="b" data-act="catClose">OK</button></div></div>`:"";
- return`<div class="card"><button class="tg" style="border:0;margin:0;padding:0" data-act="tog" data-k="pbc"><b>📋 Catégories</b><span class="sub">${n} actives ${op?"▴":"▾"}</span></button>${op?`<div class="row" style="margin-top:8px"><div class="grow"><input id="addCat" placeholder="Ajouter : ex. Un truc qu’on ne dit pas à son boss" style="width:100%"></div><button class="b" data-act="addCat">Ajouter</button></div><div class="sub" style="margin:8px 0 4px">Touche une catégorie pour la modifier, la désactiver ou la supprimer. Les tiennes sont encadrées.</div>${editor}<div class="chips" style="max-height:280px;overflow:auto">${items.map(x=>`<span class="chip ${x.off?"t":""}" style="${x.cust?"outline:1px solid var(--acc);":""}${x.off?"text-decoration:line-through;":""}" data-act="catEdit" data-k="${x.k}">${esc(x.t)}</span>`).join("")}</div>`:""}</div>`}
+ const lib=PBC.map((x,i)=>({k:"l"+i,t:(ed[i]&&ed[i].c)||x,off:!!(ed[i]&&ed[i].off),mod:!!(ed[i]&&ed[i].c),path:"jeux/catEd/"+i+"/c"})).filter(x=>!x.off);
+ const own=mine.map(x=>({k:"c"+x.id,t:x.c,cust:true,path:"jeux/cats/"+x.id+"/c"}));
+ const nDel=Object.values(ed).filter(x=>x&&(x.off||x.c)).length,cur=[...lib,...own].find(x=>x.k===sel);
+ const chip=x=>`<span class="chip" style="${x.cust?"outline:1px solid var(--acc);":""}cursor:pointer" data-act="catEdit" data-k="${x.k}">${esc(x.t)}</span>`;
+ const editor=cur?`<div style="border:1px solid var(--line);border-radius:10px;padding:10px;margin:10px 0"><label class="f" style="margin-top:0">Modifier la catégorie</label>${inp(cur.path,cur.t,"",'style="width:100%"')}<div class="row" style="margin-top:8px"><button class="g" data-act="${cur.cust?"delCat":"catDel"}" data-id="${cur.k.slice(1)}" data-i="${cur.k.slice(1)}">🗑 Supprimer</button>${!cur.cust&&cur.mod?`<button class="g" data-act="catReset" data-i="${cur.k.slice(1)}">↺ Original</button>`:""}<button class="b" data-act="catClose">OK</button></div></div>`:"";
+ return`<div class="card"><button class="tg" style="border:0;margin:0;padding:0" data-act="tog" data-k="pbc"><b>📋 Catégories</b><span class="sub">${lib.length+own.length} ${op?"▴":"▾"}</span></button>${op?`<div class="row" style="margin-top:8px"><div class="grow"><input id="addCat" placeholder="Ajouter une catégorie…" style="width:100%"></div><button class="b" data-act="addCat">Ajouter</button></div><div class="sub" style="margin:8px 0 4px">Touche une catégorie pour la modifier ou la supprimer.</div>${editor}<div class="sub" style="margin-top:6px"><b>⭐ Les tiennes (${own.length})</b> · encadrées</div><div class="chips" style="margin:4px 0 8px">${own.map(chip).join("")||'<span class="empty">Aucune pour l’instant</span>'}</div><div class="sub"><b>📚 Celles du jeu (${lib.length})</b></div><div class="chips" style="margin-top:4px;max-height:260px;overflow:auto">${lib.map(chip).join("")}</div>${nDel?`<button class="lk0" data-act="catAll">↺ Rétablir les catégories d’origine (${nDel} modifiée(s) ou supprimée(s))</button>`:""}`:""}</div>`}
 function pbFinal(){
- const pl=L(D.santaP),sb=(D.jeux||{}).pbS||{},tot=id=>Object.values(sb[id]||{}).reduce((s,v)=>s+(+v||0),0),rows=[...pl].sort((a,b)=>tot(b.id)-tot(a.id)),mx=rows.length?tot(rows[0].id):0,win=rows.filter(q=>tot(q.id)===mx);
- return`<div class="card" style="text-align:center"><h2>🏁 Partie terminée</h2>${rows.length?`<div style="font-size:22px;margin:8px 0">🏆 ${esc(win.map(q=>q.n).join(" & "))}${win.length>1?" (égalité)":""}</div>`:""}${rows.map((q,i)=>`<div class="row" style="justify-content:space-between"><span>${i+1}. ${esc(q.n)}</span><b>${tot(q.id)}</b></div>`).join("")||'<div class="empty">Aucun joueur enregistré.</div>'}<button class="b" style="width:100%;margin-top:12px;min-height:48px" data-act="pbNewGame">🔁 Nouvelle partie</button></div>`}
+ const pl=L(D.santaP),rows=[...pl].sort((a,b)=>pbTot(b.id)-pbTot(a.id)),mx=rows.length?pbTot(rows[0].id):0,win=rows.filter(q=>pbTot(q.id)===mx);
+ return`<div class="card" style="text-align:center"><h2>🏁 Partie terminée</h2>${rows.length?`<div style="font-size:22px;margin:8px 0">🏆 ${esc(win.map(q=>q.n).join(" & "))}${win.length>1?" (égalité)":""}</div>`:""}${rows.map((q,i)=>`<div class="row" style="justify-content:space-between"><span>${i+1}. ${esc(q.n)}</span><b>${pbTot(q.id)}</b></div>`).join("")||'<div class="empty">Aucun joueur enregistré.</div>'}<button class="b" style="width:100%;margin-top:12px;min-height:48px" data-act="pbNewGame">🔁 Nouvelle partie</button></div>`}
 function pbScore(p,ph){
- if(ph==="wait"||ph==="play")return"";
- const pl=L(D.santaP),sb=(D.jeux||{}).pbS||{},tot=id=>Object.values(sb[id]||{}).reduce((s,v)=>s+(+v||0),0),ed=ph==="end"&&p,rows=ed?pl:[...pl].sort((a,b)=>tot(b.id)-tot(a.id));
- return`<div class="card"><h2>🏆 Points${ed?" · manche "+p.n:""}</h2>${rows.map(q=>`<div class="row" style="justify-content:space-between;margin-bottom:4px"><span>${esc(q.n)}</span><span class="row" style="gap:10px">${ed?`<input type="number" inputmode="numeric" data-p="jeux/pbS/${q.id}/r${p.n}" data-num="1" value="${(sb[q.id]||{})["r"+p.n]??""}" placeholder="pts" style="width:72px">`:""}<b style="min-width:44px;text-align:right">${tot(q.id)}</b></span></div>`).join("")||'<div class="empty">Ajoute les joueurs ci-dessous pour compter les points.</div>'}${pl.length?'<button class="g" style="margin-top:8px" data-act="pbReset">Remettre les points à zéro</button>':""}</div>`}
-
+ if(ph!=="end"||!p)return"";
+ const pl=L(D.santaP),sb=(D.jeux||{}).pbS||{},cur=id=>(sb[id]||{})["r"+p.n],
+ st=(id,t,l)=>{const o=cur(id),v=o&&typeof o==="object"?(o[t]||0):0;return`<div class="row" style="gap:4px"><button class="g" data-act="pbp" data-id="${id}" data-t="${t}" data-d="-1">−</button><span style="min-width:92px;text-align:center"><b>${v}</b> <span class="sub">${l}</span></span><button class="g" data-act="pbp" data-id="${id}" data-t="${t}" data-d="1">+</button></div>`};
+ return`<div class="card"><h2>🏆 Points · manche ${p.n}</h2><div class="sub" style="margin-bottom:6px">+2 mot valable et unique · +1 mot valable que d’autres ont aussi trouvé · −1 si arrêt trop tôt avec n’importe quoi. Une personne saisit les points de chacun.</div>${pl.map(q=>`<div style="padding:8px 0;border-top:1px solid var(--line)"><div class="row" style="justify-content:space-between"><b>${esc(q.n)}</b><span class="sub">manche <b>${ptsOf(cur(q.id))}</b> · total <b>${pbTot(q.id)}</b></span></div><div class="row" style="margin-top:4px">${st(q.id,"u","uniques +2")}${st(q.id,"c","communs +1")}${st(q.id,"b","ratés −1")}</div></div>`).join("")||'<div class="empty">Ajoute d’abord les joueurs (carte « Joueurs »).</div>'}${pl.length?'<button class="g" style="margin-top:8px" data-act="pbReset">Remettre les points à zéro</button>':""}</div>`}
 function vPB(){
  const p=(D.jeux||{}).pb,[ph,v]=pbPhase(),mine=L((D.jeux||{}).cats),cs=p&&p.cats?Object.values(p.cats):[];
  const sheet=()=>`<div class="card">${cs.map((x,i)=>`<div style="margin-bottom:8px"><div class="sub">${i+1}. ${esc(x)}</div><input id="pa${i}" placeholder="${esc(p.letter)}…" autocomplete="off" autocapitalize="sentences" style="width:100%"></div>`).join("")}</div>`;
- let h=gsel();
- if((D.jeux||{}).pbEnd)return h+pbFinal()+vPart();
+ let h=gsel()+how("pb",HOW_PB)+vPart()+catCard();
+ if((D.jeux||{}).pbEnd)return h+pbFinal();
  if(ph==="wait")h+=`<div class="card" style="text-align:center"><div class="sub">Manche ${p.n}</div><h2>Préparez-vous ✏️</h2><div id="pbT" style="font-size:64px;font-weight:700;color:var(--acc)">${v}</div><div class="sub">La lettre et les catégories s’affichent au départ.</div><button class="g" style="margin-top:12px" data-act="pbCancel">Annuler la manche</button></div>`;
  else if(ph==="play")h+=`<div class="card" style="text-align:center"><div class="sub">Manche ${p.n} · tout le monde joue en même temps</div><div style="font-size:96px;font-weight:800;line-height:1;color:var(--acc)">${esc(p.letter)}</div><div id="pbT" style="font-size:34px;font-weight:700;margin:6px 0 10px">${fmt(v)}</div><button class="b" style="background:var(--bad);min-height:48px;padding:0 28px" data-act="pbStop">✋ Stop !</button><div><button class="lk0" style="margin:12px auto 0" data-act="pbCancel">Annuler la manche</button></div></div>`+sheet();
- else if(ph==="end")h+=`<div class="card" style="text-align:center"><div class="sub">Manche ${p.n} · lettre ${esc(p.letter)}</div><h2>${p.stop&&p.stop>=p.t0?"✋ Stop !":"⌛ Temps écoulé"}</h2><div class="sub">Lisez vos réponses à voix haute. 10 pts pour une réponse unique, 5 pts si d’autres ont la même, 0 sans réponse.</div></div>`+sheet();
+ else if(ph==="end")h+=`<div class="card" style="text-align:center"><div class="sub">Manche ${p.n} · lettre ${esc(p.letter)}</div><h2>${p.stop&&p.stop>=p.t0?"✋ Stop !":"⌛ Temps écoulé"}</h2><div class="sub">Lisez vos réponses à voix haute, puis saisissez les points ci-dessous.</div></div>`+sheet();
  h+=pbScore(p,ph);
- if(ph!=="wait"&&ph!=="play")h+=`<div class="card"><h2>🔤 ${ph==="none"?"Petit bac":"Nouvelle manche"}</h2>${ph==="none"?'<div class="sub" style="margin-bottom:8px">Une lettre, des catégories (parfois farfelues) : trouve un mot par catégorie avant la fin du temps. Tout le monde voit la même manche sur son téléphone.</div>':""}<div class="row"><span class="sub">Catégories</span><select id="pbN">${[5,6,8,10,12].map(n=>`<option ${n===8?"selected":""}>${n}</option>`).join("")}</select><span class="sub">Temps</span><select id="pbSec">${[60,90,120,180].map(s=>`<option ${s===90?"selected":""}>${s}</option>`).join("")}</select><span class="sub">s</span></div><button class="b" style="width:100%;margin-top:10px;min-height:48px" data-act="pbNew">🎲 Lancer une manche (départ dans 10 s)</button>${p&&p.n?'<button class="g" style="width:100%;margin-top:8px" data-act="pbFinish">🏁 Terminer la partie</button>':""}</div>`;
- h+=catCard();
- return h+vPart()}
+ if(ph!=="wait"&&ph!=="play")h+=`<div class="card"><h2>🔤 ${ph==="none"?"Petit bac":"Nouvelle manche"}</h2>${ph==="none"?'<div class="sub" style="margin-bottom:8px">Une lettre, des catégories (parfois farfelues) : trouve un mot par catégorie avant la fin du temps. Tout le monde voit la même manche sur son téléphone.</div>':""}<div class="row"><span class="sub">Catégories</span><select id="pbN">${[5,6,8,10,12].map(n=>`<option ${n===8?"selected":""}>${n}</option>`).join("")}</select><span class="sub">Temps</span><select id="pbSec">${[60,90,120,180].map(s=>`<option ${s===90?"selected":""}>${s}</option>`).join("")}</select><span class="sub">s</span></div><div class="row" style="margin-top:8px"><span class="sub">Catégories</span><select id="pbMode" class="grow"><option value="both">Les deux (jeu + les tiennes)</option><option value="mine">Seulement les tiennes</option><option value="game">Seulement celles du jeu</option></select></div><button class="b" style="width:100%;margin-top:10px;min-height:48px" data-act="pbNew">🎲 Lancer une manche (départ dans 10 s)</button>${p&&p.n?'<button class="g" style="width:100%;margin-top:8px" data-act="pbFinish">🏁 Terminer la partie</button>':""}</div>`;
+ return h}
 
 function vFacts(){
  const Q=S.fq,pl=L(D.santaP);let h=gsel();
@@ -365,7 +542,7 @@ function vFacts(){
   return h+`<div class="card"><div class="sub">Question ${Q.i+1}/${Q.qs.length}${who?" · à "+esc(who):""}</div><div style="font-size:22px;font-weight:600;margin:14px 0;text-align:center">${esc(q[0])}</div>${Q.a==null?'<div class="row"><button class="b" style="flex:1;min-height:56px;background:var(--ok)" data-act="fqAns" data-v="1">✅ Vrai</button><button class="b" style="flex:1;min-height:56px;background:var(--bad)" data-act="fqAns" data-v="0">❌ Faux</button></div>':`<div style="text-align:center;font-size:20px;font-weight:700;color:${ok?"var(--ok)":"var(--bad)"}">${ok?"✔ Bonne réponse !":"✘ Raté !"} C’était ${q[1]?"VRAI":"FAUX"}</div><div class="sub" style="margin:10px 0">${esc(q[2])}</div><button class="b" style="width:100%;min-height:48px" data-act="fqNext">${Q.i+1>=Q.qs.length?"Voir les scores":"Question suivante →"}</button>`}</div><button class="g" data-act="fqStop">Quitter</button>`}
  if(Q.ph==="end"){const rows=Q.ord.length?[...Q.ord].sort((a,b)=>(Q.sc[b]||0)-(Q.sc[a]||0)):[],tot=Object.values(Q.sc).reduce((s,v)=>s+v,0);
   return h+`<div class="card" style="text-align:center"><h2>🏁 Terminé</h2>${rows.length?rows.map((n,i)=>`<div class="row" style="justify-content:space-between"><span>${i===0?"🏆 ":""}${esc(n)}</span><b>${Q.sc[n]||0}</b></div>`).join(""):`<div style="font-size:24px;margin:8px 0">${tot} / ${Q.qs.length}</div>`}<button class="b" style="width:100%;margin-top:12px;min-height:48px" data-act="fqStop">Rejouer</button></div>`}
- return h+`<div class="card"><h2>🤯 Vrai ou faux insolite</h2><div class="sub">${FACTS.length} faits étonnants : saurez-vous démêler le vrai du faux ? Chaque question est posée à tour de rôle ${pl.length?"aux joueurs de la liste ("+pl.map(p=>esc(p.n)).join(", ")+").":"(ajoute des joueurs en bas pour compter les points de chacun)."}</div><div class="row" style="margin-top:10px"><span class="sub">Questions</span><select id="fqN">${[5,10,15,20].map(n=>`<option ${n===10?"selected":""}>${n}</option>`).join("")}</select></div><button class="b" style="width:100%;margin-top:10px;min-height:48px" data-act="fqStart">▶ Commencer</button></div>`+vPart()}
+ return h+how("fq",HOW_FQ)+vPart()+`<div class="card"><h2>🤯 Vrai ou faux insolite</h2><div class="sub">${FACTS.length} faits étonnants : saurez-vous démêler le vrai du faux ? Chaque question est posée à tour de rôle ${pl.length?"aux joueurs de la liste ("+pl.map(p=>esc(p.n)).join(", ")+").":"(ajoute des joueurs en bas pour compter les points de chacun)."}</div><div class="row" style="margin-top:10px"><span class="sub">Questions</span><select id="fqN">${[10,15,20,30].map(n=>`<option ${n===10?"selected":""}>${n}</option>`).join("")}</select></div><button class="b" style="width:100%;margin-top:10px;min-height:48px" data-act="fqStart">▶ Commencer</button></div>`}
 
 function vSet(){
   return`<div class="card"><h2>Le séjour</h2><label class="f">Titre</label>${inp("cfg/title",C.title,"",'style="width:100%"')}<label class="f">Lieu</label>${inp("cfg/place",C.place,"",'style="width:100%"')}
@@ -426,11 +603,12 @@ document.addEventListener("click",e=>{if(e.target.closest("a"))return;const b=e.
  else if(a==="game"){S.game=b.dataset.t;pbPh="";render()}
  else if(a==="reuse")setp("jeux/words/"+id+"/used",null);
  else if(a==="reuseAll"){L(D.jeux&&D.jeux.words).filter(w=>w.used).forEach(w=>setp("jeux/words/"+w.id+"/used",null));toast("Mots remis en jeu")}
- else if(a==="fqStart"){const n=+val("fqN")||10;S.fq={ph:"play",qs:shuf(FACTS).slice(0,n),i:0,a:null,ord:shuf(L(D.santaP).map(p=>p.n)),sc:{}};render()}
+ else if(a==="fqStart"){const n=+val("fqN")||10;S.fq={ph:"play",qs:shuf([...shuf(FACTS.filter(f=>f[1])).slice(0,Math.floor(n/2)),...shuf(FACTS.filter(f=>!f[1])).slice(0,n-Math.floor(n/2))]),i:0,a:null,ord:shuf(L(D.santaP).map(p=>p.n)),sc:{}};render()}
  else if(a==="fqAns"){const q=S.fq.qs[S.fq.i],v=b.dataset.v==="1";S.fq.a=v;if(v===q[1]){const w=S.fq.ord.length?S.fq.ord[S.fq.i%S.fq.ord.length]:"Score";S.fq.sc[w]=(S.fq.sc[w]||0)+1}render()}
  else if(a==="fqNext"){if(S.fq.i+1>=S.fq.qs.length)S.fq.ph="end";else{S.fq.i++;S.fq.a=null}render()}
  else if(a==="fqStop"){S.fq={ph:"lobby"};render()}
- else if(a==="pbNew"){const n=+val("pbN")||8,sec=+val("pbSec")||90,pool=catPool(),lt="ABCDEFGHIJLMNOPRSTV",prev=(D.jeux||{}).pb||{};Object.keys(S.dv).filter(k=>/^pa\d+$/.test(k)).forEach(k=>delete S.dv[k]);pbPh="";setp("jeux/pb",{letter:lt[Math.floor(Math.random()*lt.length)],cats:shuf(pool).slice(0,n),dur:sec,t0:Date.now()+10000,n:(prev.n||0)+1,by:S.me})}
+ else if(a==="pbNew"){const n=+val("pbN")||8,sec=+val("pbSec")||90,pool=catPool(val("pbMode")||"both"),lt="ABCDEFGHIJLMNOPRSTV",prev=(D.jeux||{}).pb||{};if(!pool.length){toast("Aucune catégorie dans ce choix : ajoutes-en ou change de mode");return}Object.keys(S.dv).filter(k=>/^pa\d+$/.test(k)).forEach(k=>delete S.dv[k]);pbPh="";setp("jeux/pb",{letter:lt[Math.floor(Math.random()*lt.length)],cats:shuf(pool).slice(0,n),dur:sec,t0:Date.now()+10000,n:(prev.n||0)+1,by:S.me})}
+ else if(a==="pbp"){const p=(D.jeux||{}).pb;if(!p)return;const id=b.dataset.id,t=b.dataset.t,cur=(((D.jeux||{}).pbS||{})[id]||{})["r"+p.n],v=cur&&typeof cur==="object"?(cur[t]||0):0;setp("jeux/pbS/"+id+"/r"+p.n+"/"+t,Math.max(0,v+(+b.dataset.d)))}
  else if(a==="pbReset"){if(confirm("Remettre tous les points à zéro ?"))setp("jeux/pbS",null)}
  else if(a==="pbCancel"){if(confirm("Annuler cette manche ?"))setp("jeux/pb/t0",0)}
  else if(a==="pbFinish"){if(confirm("Terminer la partie et afficher le classement final ?"))setp("jeux/pbEnd",Date.now())}
@@ -438,7 +616,8 @@ document.addEventListener("click",e=>{if(e.target.closest("a"))return;const b=e.
  else if(a==="pbStop"){setp("jeux/pb/stop",Date.now())}
  else if(a==="catEdit"){S.o.cedit=b.dataset.k;render()}
  else if(a==="catClose"){S.o.cedit=null;render()}
- else if(a==="catOff"){const i=b.dataset.i,cur=((D.jeux||{}).catEd||{})[i]||{};setp("jeux/catEd/"+i+"/off",cur.off?null:true)}
+ else if(a==="catDel"){S.o.cedit=null;setp("jeux/catEd/"+b.dataset.i+"/off",true)}
+ else if(a==="catAll"){if(confirm("Rétablir toutes les catégories d’origine (supprimées ou modifiées) ?"))setp("jeux/catEd",null)}
  else if(a==="catReset"){setp("jeux/catEd/"+b.dataset.i,null)}
  else if(a==="addCat"){const t=val("addCat");if(!t)return;clr("addCat");S.fx="#addCat";setp("jeux/cats/"+uid(),{c:t})}
  else if(a==="delCat"){S.o.cedit=null;setp("jeux/cats/"+id,null)}
@@ -448,6 +627,7 @@ document.addEventListener("click",e=>{if(e.target.closest("a"))return;const b=e.
  else if(a==="tuStart"){const T=S.tu,ws=L(D.jeux&&D.jeux.words).filter(x=>!x.used),w=ws.map(x=>x.w);if(w.length<4){toast("Il faut au moins 4 mots");return}const tm=T.teams.map((n,i)=>((($("#tn"+i)||{}).value)||n).trim()||n),sec=+val("tuSec")||30,ro=tm.map(()=>[]);contrib().forEach((id,i)=>{const t=T.asg&&T.asg[id]!=null&&T.asg[id]<tm.length?T.asg[id]:i%tm.length;ro[t].push(P(id).n)});if(ro.some(r=>!r.length)){toast("Chaque équipe doit avoir au moins un joueur");return}S.tu={...T,teams:tm,sec,ph:"ready",all:w,ids:ws.map(x=>x.id),rem:shuf(w),r:1,sc:tm.map(()=>0),rs:[0,1,2].map(()=>tm.map(()=>0)),ro,ti:0,left:0,nr:false};render()}
  else if(a==="tuShuf"){const n=S.tu.teams.length;S.tu.asg={};shuf(contrib()).forEach((id,i)=>S.tu.asg[id]=i%n);render()}
  else if(a==="tuGo")tuGo();
+ else if(a==="tuReset"){if(confirm("Supprimer tous les mots et les équipes pour recommencer avec d’autres joueurs ? (La liste des joueurs du Petit bac et du Secret Santa n’est pas touchée.)")){clearInterval(tuI);setp("jeux/words",null);S.tu={ph:"lobby",teams:["Équipe 1","Équipe 2"],sec:30,sc:[],ti:0,r:1,rem:[],all:[],left:0,t:0,nr:false};Object.keys(S.dv).filter(k=>/^tuSec$/.test(k)).forEach(k=>delete S.dv[k]);toast("Time’s Up réinitialisé")}}
  else if(a==="tuOk"){S.tu.sc[S.tu.ti]++;if(S.tu.rs)S.tu.rs[S.tu.r-1][S.tu.ti]++;S.tu.rem.shift();if(!S.tu.rem.length)tuRound();else render()}
  else if(a==="tuSkip"){if(S.tu.rem.length>1){S.tu.rem.push(S.tu.rem.shift());render()}else toast("C’est le dernier mot !")}
  else if(a==="tuStop"){if(S.tu.ph==="end"||confirm("Abandonner la partie ?")){clearInterval(tuI);S.tu.ph="lobby";render()}}
